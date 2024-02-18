@@ -1,0 +1,25 @@
+{
+  "name": "grpc",
+  "version": "1.0.0",
+  "description": "grpc with node",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd server && node ./server.js",
+    "client": "cd client && node ./client.js",
+    "pb_generator": "bash pb-generator.sh"
+  },
+  "keywords": [
+    "grpc",
+    "node"
+  ],
+  "author": "labyrinth",
+  "license": "MIT",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.10.1",
+    "@grpc/proto-loader": "^0.7.10"
+  },
+  "devDependencies": {
+    "google-protobuf": "^3.21.2",
+    "grpc-tools": "^1.12.4"
+  }
+}
