@@ -4,7 +4,7 @@
   "description": "grpc with node",
   "main": "index.js",
   "scripts": {
-    "server": "cd server && node ./server.js",
+    "server": "cd server && nodemon -q ./server.js",
     "client": "cd client && node ./client.js",
     "pb_generator": "bash pb-generator.sh"
   },
