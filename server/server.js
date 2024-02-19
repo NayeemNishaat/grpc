@@ -14,16 +14,31 @@ function greet(call, callback) {
   callback(null, { result: call.request.greeting.firstName });
 }
 
+function greetManyTimes(call, callback) {
+  const firstName = call.request.greeting.firstName;
+
+  // setup streaming
+  let count = 0,
+    intervalID = setInterval(() => {
+      call.write({ result: firstName });
+
+      if (++count > 9) {
+        clearInterval(intervalID);
+        call.end();
+      }
+    }, 1000);
+}
+
 /**
  * Sum RPC method
  */
-function sum(call, callback) {
-  callback(null, { total: call.request.num1 + call.request.num2 });
-}
+// function sum(call, callback) {
+//   callback(null, { total: call.request.num1 + call.request.num2 });
+// }
 
 const server = new grpc.Server();
-server.addService(greetService.service, { Greet: greet });
-server.addService(sumService.service, { Sum: sum });
+server.addService(greetService.service, { Greet: greet, greetManyTimes });
+// server.addService(sumService.service, { Sum: sum });
 
 server.bindAsync(
   "0.0.0.0:50051",

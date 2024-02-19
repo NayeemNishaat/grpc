@@ -5,6 +5,17 @@ package greet;
 service GreetService {
   // unary api
   rpc Greet (GreetRequest) returns (GreetResponse) {};
+
+  // streaming api
+  rpc GreetManyTimes (GreetManyTimesRequest) returns (stream GreetManyTimesResponse);
+}
+
+message GreetManyTimesRequest {
+  Greeting greeting = 1;
+}
+
+message GreetManyTimesResponse {
+  string result = 1;
 }
 
 message Greeting {
