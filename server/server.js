@@ -6,6 +6,9 @@ const greetService = protoDescriptor.greet.GreetService;
 const sumService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/sum.proto", {})
 ).sum.SumService;
+const factorService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/factor.proto", {})
+).factor.FactorService;
 
 /**
  * Implemen Greet RPC method
@@ -32,13 +35,40 @@ function greetManyTimes(call, callback) {
 /**
  * Sum RPC method
  */
-// function sum(call, callback) {
-//   callback(null, { total: call.request.num1 + call.request.num2 });
-// }
+function sum(call, callback) {
+  callback(null, { total: call.request.num1 + call.request.num2 });
+}
+
+/**
+ * Factor Server Streaming RPC Method
+ */
+function factor(call, callback) {
+  let { number } = call.request,
+    k = 2;
+
+  if (number <= 1) {
+    call.write({
+      factorFailResponse: { error: true, message: "Invalid Input" }
+    });
+    call.end();
+    return;
+  }
+
+  while (number > 1) {
+    if (number % k === 0) {
+      call.write({ factorSuccessResponse: { number: k } });
+      number = Math.trunc(number / k);
+    } else {
+      k++;
+    }
+  }
+  call.end();
+}
 
 const server = new grpc.Server();
-server.addService(greetService.service, { Greet: greet, greetManyTimes });
+// server.addService(greetService.service, { Greet: greet, greetManyTimes });
 // server.addService(sumService.service, { Sum: sum });
+server.addService(factorService.service, { factor });
 
 server.bindAsync(
   "0.0.0.0:50051",

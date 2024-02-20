@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package factor;
+
+service FactorService {
+  // server streaming api
+  rpc Factor (FcatorRequest) returns (stream FactorResponses);
+}
+
+message FcatorRequest {
+  int32 number = 1;
+}
+
+message FactorSuccessResponse {
+  int32 number = 1;
+}
+
+message FactorFailResponse {
+  bool error = 1;
+  string message = 2;
+}
+
+
+message FactorResponses {
+  oneof FactorResponse {
+    FactorSuccessResponse factorSuccessResponse = 1;
+    FactorFailResponse factorFailResponse = 2;
+  }
+  // Other variables
+}
+
