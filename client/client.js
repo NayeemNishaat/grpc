@@ -3,27 +3,27 @@ const protoLoader = require("@grpc/proto-loader");
 // const packageDefinition = protoLoader.loadSync("../protos/greet.proto");
 // const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 // const greeterService = protoDescriptor.greet.GreetService;
-// const sumService = grpc.loadPackageDefinition(
-//   protoLoader.loadSync("../protos/sum.proto", {})
-// ).sum.SumService;
-const factorService = grpc.loadPackageDefinition(
-  protoLoader.loadSync("../protos/factor.proto", {})
-).factor.FactorService;
+const sumService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/sum.proto", {})
+).sum.SumService;
+// const factorService = grpc.loadPackageDefinition(
+//   protoLoader.loadSync("../protos/factor.proto", {})
+// ).factor.FactorService;
 
 // const greetClient = new greeterService(
 //   "localhost:50051",
 //   grpc.credentials.createInsecure()
 // );
 
-// const sumClient = new sumService(
-//   "localhost:50051",
-//   grpc.credentials.createInsecure()
-// );
-
-const factorClient = new factorService(
+const sumClient = new sumService(
   "localhost:50051",
   grpc.credentials.createInsecure()
 );
+
+// const factorClient = new factorService(
+//   "localhost:50051",
+//   grpc.credentials.createInsecure()
+// );
 
 /* greetClient.Greet(
   { greeting: { firstName: "Nayeem", lastName: "Nishaat" } },
@@ -65,7 +65,7 @@ greetCall.on("end", () => {
   }
 }); */
 
-const factorCall = factorClient.factor({ number: 100 }, () => {});
+/* const factorCall = factorClient.factor({ number: 100 }, () => {});
 
 factorCall.on("data", (res) => {
   switch (Object.keys(res)[0]) {
@@ -97,5 +97,40 @@ factorCall.on("error", (error) => {
 });
 
 factorCall.on("end", () => {
+  console.log("Stream Ended!");
+}); */
+
+const sumCall = sumClient.factor({ number: 100 }, () => {});
+
+sumCall.on("data", (res) => {
+  switch (Object.keys(res)[0]) {
+    case "factorFailResponse":
+      console.log(
+        "Server Stream Error Response:",
+        res.factorFailResponse.message
+      );
+      break;
+
+    case "factorSuccessResponse":
+      console.log(
+        "Server Stream Success Response:",
+        res.factorSuccessResponse.number
+      );
+      break;
+
+    default:
+      break;
+  }
+});
+
+sumCall.on("status", (status) => {
+  console.log("Server Stream Status", status);
+});
+
+sumCall.on("error", (error) => {
+  console.error(error);
+});
+
+sumCall.on("end", () => {
   console.log("Stream Ended!");
 });

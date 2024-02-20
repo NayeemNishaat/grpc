@@ -67,8 +67,8 @@ function factor(call, callback) {
 
 const server = new grpc.Server();
 // server.addService(greetService.service, { Greet: greet, greetManyTimes });
-// server.addService(sumService.service, { Sum: sum });
-server.addService(factorService.service, { factor });
+server.addService(sumService.service, { Sum: sum, factor });
+// server.addService(factorService.service, { factor });
 
 server.bindAsync(
   "0.0.0.0:50051",
