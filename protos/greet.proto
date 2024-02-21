@@ -4,13 +4,24 @@ package greet;
 
 service GreetService {
   // unary api
-  rpc Greet (GreetRequest) returns (GreetResponse) {};
+  rpc Greet (GreetRequest) returns (GreetResponse) {}; // Note: One Request One Response
 
   // server streaming api
-  rpc GreetManyTimes (GreetManyTimesRequest) returns (stream GreetManyTimesResponse);
+  rpc GreetManyTimes (GreetManyTimesRequest) returns (stream GreetManyTimesResponse); // Note: One Request Multiple Responses
   
   // client streaming api
-  rpc LongGreet (stream LongGreetRequest) returns (LongGreetResponse);
+  rpc LongGreet (stream LongGreetRequest) returns (LongGreetResponse); // Note: Multiple Requests One Response At Any Time But Typically At The End After Receving All The Data From Client
+
+  // BiDi streaming api
+  rpc GreetEveryone (stream GreetEveryoneRequest) returns (stream GreetEveryoneResponse); // Note: Multiple Requests Multiple Responses
+}
+
+message GreetEveryoneRequest {
+  Greeting greeting = 1;
+}
+
+message GreetEveryoneResponse {
+  string result = 1;
 }
 
 message LongGreetRequest {
