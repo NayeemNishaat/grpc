@@ -33,6 +33,24 @@ function greetManyTimes(call, callback) {
 }
 
 /**
+ * Long Greet RPC Client Streaming Method
+ */
+function longGreet(call, callback) {
+  call.on("data", (req) => {
+    const fullName = req.greeting.firstName + " " + req.greeting.lastName;
+    console.log(fullName);
+  });
+
+  call.on("error", (err) => {
+    console.error(err);
+  });
+
+  call.on("end", () => {
+    callback(null, { result: "End result!" });
+  });
+}
+
+/**
  * Sum RPC method
  */
 function sum(call, callback) {
@@ -66,8 +84,12 @@ function factor(call, callback) {
 }
 
 const server = new grpc.Server();
-// server.addService(greetService.service, { Greet: greet, greetManyTimes });
-server.addService(sumService.service, { Sum: sum, factor });
+server.addService(greetService.service, {
+  Greet: greet,
+  greetManyTimes,
+  longGreet
+});
+// server.addService(sumService.service, { Sum: sum, factor });
 
 server.bindAsync(
   "0.0.0.0:50051",

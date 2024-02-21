@@ -7,15 +7,15 @@ const sumService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/sum.proto", {})
 ).sum.SumService;
 
-// const greetClient = new greeterService(
-//   "localhost:50051",
-//   grpc.credentials.createInsecure()
-// );
-
-const sumClient = new sumService(
+const greetClient = new greeterService(
   "localhost:50051",
   grpc.credentials.createInsecure()
 );
+
+// const sumClient = new sumService(
+//   "localhost:50051",
+//   grpc.credentials.createInsecure()
+// );
 
 function greet() {
   greetClient.Greet(
@@ -51,6 +51,27 @@ function greetManyTimes() {
   greetCall.on("end", () => {
     console.log("Stream Ended!");
   });
+}
+
+function longGreet() {
+  const call = greetClient.longGreet({}, (err, res) => {
+    if (!err) {
+      console.log(res.result);
+    } else {
+      console.error(err);
+    }
+  });
+
+  let count = 0,
+    intervalID = setInterval(() => {
+      console.log("Sending Data");
+      call.write({ greeting: { firstName: "Nayeem", lastName: "Nishaat" } });
+
+      if (++count > 2) {
+        clearInterval(intervalID);
+        call.end();
+      }
+    }, 1000);
 }
 
 function sum() {
@@ -101,4 +122,5 @@ function factor() {
 }
 
 // Execute RPCs
-factor();
+// factor();
+longGreet();
