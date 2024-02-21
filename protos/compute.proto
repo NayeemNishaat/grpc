@@ -2,12 +2,23 @@ syntax = "proto3";
 
 package sum;
 
-service SumService {
+service ComputeService {
   // unary api
   rpc Sum (SumRequest) returns (SumResponse) {};
 
   // server streaming api
   rpc Factor (FcatorRequest) returns (stream FactorResponses);
+
+  // client streaming api
+  rpc Avg (stream AvgRequest) returns (AvgResponse);
+}
+
+message AvgRequest {
+  int32 num = 1;
+}
+
+message AvgResponse {
+  double avg = 1; // Alt: Also coluld be float but it has some precision issues
 }
 
 message SumRequest {

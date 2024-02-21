@@ -3,9 +3,9 @@ const protoLoader = require("@grpc/proto-loader");
 const packageDefinition = protoLoader.loadSync("../protos/greet.proto", {});
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const greetService = protoDescriptor.greet.GreetService;
-const sumService = grpc.loadPackageDefinition(
-  protoLoader.loadSync("../protos/sum.proto", {})
-).sum.SumService;
+const computeService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/compute.proto", {})
+).sum.ComputeService;
 
 /**
  * Implemen Greet RPC method
@@ -83,13 +83,35 @@ function factor(call, callback) {
   call.end();
 }
 
+/**
+ * Avg Client Streaming RPC Method
+ */
+function avg(call, callback) {
+  let avg = 0,
+    n = 1;
+
+  call.on("data", (req) => {
+    console.log("Received:", req.num);
+    avg = (avg * (n - 1) + req.num) / n;
+    n++;
+  });
+
+  call.on("error", (err) => {
+    console.error(err);
+  });
+
+  call.on("end", () => {
+    callback(null, { avg: Math.round(avg * 1e2) / 1e2 });
+  });
+}
+
 const server = new grpc.Server();
-server.addService(greetService.service, {
-  Greet: greet,
-  greetManyTimes,
-  longGreet
-});
-// server.addService(sumService.service, { Sum: sum, factor });
+// server.addService(greetService.service, {
+//   Greet: greet,
+//   greetManyTimes,
+//   longGreet
+// });
+server.addService(computeService.service, { Sum: sum, factor, avg });
 
 server.bindAsync(
   "0.0.0.0:50051",

@@ -3,19 +3,19 @@ const protoLoader = require("@grpc/proto-loader");
 const packageDefinition = protoLoader.loadSync("../protos/greet.proto");
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const greeterService = protoDescriptor.greet.GreetService;
-const sumService = grpc.loadPackageDefinition(
-  protoLoader.loadSync("../protos/sum.proto", {})
-).sum.SumService;
+const computeService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/compute.proto", {})
+).sum.ComputeService;
 
-const greetClient = new greeterService(
-  "localhost:50051",
-  grpc.credentials.createInsecure()
-);
-
-// const sumClient = new sumService(
+// const greetClient = new greeterService(
 //   "localhost:50051",
 //   grpc.credentials.createInsecure()
 // );
+
+const sumClient = new computeService(
+  "localhost:50051",
+  grpc.credentials.createInsecure()
+);
 
 function greet() {
   greetClient.Greet(
@@ -121,6 +121,29 @@ function factor() {
   });
 }
 
+function avg() {
+  const call = sumClient.avg({}, (err, res) => {
+    if (!err) {
+      console.log("Average:", res.avg);
+    } else {
+      console.error(err);
+    }
+  });
+
+  let count = 0,
+    intervalID = setInterval(() => {
+      const num = Math.trunc(Math.random() * 10);
+      console.log("Sent:", num);
+      call.write({ num });
+
+      if (++count > 2) {
+        clearInterval(intervalID);
+        call.end();
+      }
+    }, 1000);
+}
+
 // Execute RPCs
 // factor();
-longGreet();
+// longGreet();
+avg();
