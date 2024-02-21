@@ -64,7 +64,7 @@ function longGreet() {
 
   let count = 0,
     intervalID = setInterval(() => {
-      console.log("Sending Data");
+      console.log("Sending Data", count);
       call.write({ greeting: { firstName: "Nayeem", lastName: "Nishaat" } });
 
       if (++count > 2) {

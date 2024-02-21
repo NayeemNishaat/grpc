@@ -46,7 +46,7 @@ function longGreet(call, callback) {
   });
 
   call.on("end", () => {
-    callback(null, { result: "End result!" });
+    callback(null, { result: "Server response on client end request!" });
   });
 }
 
