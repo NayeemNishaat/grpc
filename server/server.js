@@ -51,6 +51,43 @@ function longGreet(call, callback) {
 }
 
 /**
+ * Sleep for the specified amount of time
+ */
+async function sleep(interval) {
+  return new Promise((resolve, _reject) => {
+    setTimeout(() => {
+      resolve();
+    }, interval);
+  });
+}
+
+/**
+ * greetEveryone BiDi Streaming API
+ */
+async function greetEveryone(call, callback) {
+  call.on("data", (req) => {
+    console.log(req.greeting.firstName + " " + req.greeting.lastName);
+  });
+
+  call.on("error", (err) => {
+    console.error(err);
+  });
+
+  // Remark: Don't have status event in the server
+
+  call.on("end", () => {
+    console.log("Client Ended!");
+  });
+
+  for (let i = 0; i < 10; i++) {
+    call.write({ result: "Nayeem Nishaat" });
+    await sleep(1000);
+  }
+
+  call.end();
+}
+
+/**
  * Sum RPC method
  */
 function sum(call, callback) {
@@ -106,12 +143,13 @@ function avg(call, callback) {
 }
 
 const server = new grpc.Server();
-// server.addService(greetService.service, {
-//   Greet: greet,
-//   greetManyTimes,
-//   longGreet
-// });
-server.addService(computeService.service, { Sum: sum, factor, avg });
+server.addService(greetService.service, {
+  Greet: greet,
+  greetManyTimes,
+  longGreet,
+  greetEveryone
+});
+// server.addService(computeService.service, { Sum: sum, factor, avg });
 
 server.bindAsync(
   "0.0.0.0:50051",

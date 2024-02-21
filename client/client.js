@@ -7,15 +7,15 @@ const computeService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/compute.proto", {})
 ).sum.ComputeService;
 
-// const greetClient = new greeterService(
-//   "localhost:50051",
-//   grpc.credentials.createInsecure()
-// );
-
-const sumClient = new computeService(
+const greetClient = new greeterService(
   "localhost:50051",
   grpc.credentials.createInsecure()
 );
+
+// const sumClient = new computeService(
+//   "localhost:50051",
+//   grpc.credentials.createInsecure()
+// );
 
 function greet() {
   greetClient.Greet(
@@ -72,6 +72,46 @@ function longGreet() {
         call.end();
       }
     }, 1000);
+}
+
+/**
+ * Sleep for the specified amount of time
+ */
+async function sleep(interval) {
+  return new Promise((resolve, _reject) => {
+    setTimeout(() => {
+      resolve();
+    }, interval);
+  });
+}
+
+async function greetEveryone() {
+  const call = greetClient.greetEveryone({}, (err, res) => {
+    console.log("Client Initiated!");
+  });
+
+  call.on("data", (res) => {
+    console.log(res.result);
+  });
+
+  call.on("error", (err) => {
+    console.error(err);
+  });
+
+  call.on("status", (status) => {
+    console.log(status);
+  });
+
+  call.on("end", () => {
+    console.log("Server Ended!");
+  });
+
+  for (let i = 0; i < 10; i++) {
+    call.write({ greeting: { firstName: "Yeakub", lastName: "Ali" } });
+    await sleep(1500);
+  }
+
+  call.end();
 }
 
 function sum() {
@@ -146,4 +186,5 @@ function avg() {
 // Execute RPCs
 // factor();
 // longGreet();
-avg();
+// avg();
+greetEveryone();
