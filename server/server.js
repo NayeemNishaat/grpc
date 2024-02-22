@@ -165,6 +165,20 @@ function currentMax(call, callback) {
   });
 }
 
+function sqrt(call, callback) {
+  const { num } = call.request;
+
+  if (num >= 0) {
+    callback(null, { num: Math.sqrt(num) });
+  } else {
+    // Part: Do Error handling
+    callback({
+      code: grpc.status.INVALID_ARGUMENT,
+      message: "Number is not positive!"
+    });
+  }
+}
+
 const server = new grpc.Server();
 // server.addService(greetService.service, {
 //   Greet: greet,
@@ -176,7 +190,8 @@ server.addService(computeService.service, {
   Sum: sum,
   factor,
   avg,
-  currentMax
+  currentMax,
+  sqrt
 });
 
 server.bindAsync(

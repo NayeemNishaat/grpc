@@ -14,6 +14,18 @@ service ComputeService {
 
   // bi-directional streaming api
   rpc CurrentMax (stream CurrentMaxRequest) returns (stream CurrentMaxResponse);
+
+  // unary api with error handling
+  // it will throw an error if given number is negative
+  rpc Sqrt (SqrtRequest) returns (SqrtResponse) {};
+}
+
+message SqrtRequest {
+  int32 num = 1;
+}
+
+message SqrtResponse {
+  double num = 1;
 }
 
 message CurrentMaxRequest {

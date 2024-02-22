@@ -208,9 +208,20 @@ async function currentMax() {
   call.end();
 }
 
+function sqrt() {
+  computeClient.sqrt({ num: -1 }, (err, res) => {
+    if (!err) {
+      console.log("Square Root Is: ", res.num);
+    } else {
+      console.error(err);
+    }
+  });
+}
+
 // Execute RPCs
 // factor();
 // longGreet();
 // avg();
 // greetEveryone();
-currentMax();
+// currentMax();
+sqrt();
