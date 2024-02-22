@@ -6,7 +6,8 @@
   "scripts": {
     "server": "cd server && nodemon -q ./server.js",
     "client": "cd client && node ./client.js",
-    "pb_generator": "bash pb-generator.sh"
+    "gen_pb": "bash ./scripts/gen_pb.sh",
+    "gen_cert": "bash ./scripts/gen_cert.sh"
   },
   "keywords": [
     "grpc",

@@ -1,5 +1,6 @@
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
+const fs = require("node:fs");
 const packageDefinition = protoLoader.loadSync("../protos/greet.proto");
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const greeterService = protoDescriptor.greet.GreetService;
@@ -7,15 +8,18 @@ const computeService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/compute.proto", {})
 ).sum.ComputeService;
 
-// const greetClient = new greeterService(
-//   "localhost:50051",
-//   grpc.credentials.createInsecure()
-// );
-
-const computeClient = new computeService(
-  "localhost:50051",
-  grpc.credentials.createInsecure()
+/**
+ * SSL
+ */
+const secureCreds = grpc.credentials.createSsl(
+  fs.readFileSync("../certs/ca.crt"),
+  fs.readFileSync("../certs/client.pem"),
+  fs.readFileSync("../certs/client.crt")
 );
+const insecureCreds = grpc.ServerCredentials.createInsecure();
+
+// const greetClient = new greeterService("localhost:50051", insecureCreds);
+const computeClient = new computeService("localhost:50051", secureCreds);
 
 function greet() {
   greetClient.Greet(
@@ -210,8 +214,8 @@ async function currentMax() {
 
 function sqrt() {
   computeClient.sqrt(
-    { num: -1 },
-    { deadline: Date.now() + 10 }, // Note: Setting GRPC deadline. Remark: Deadline gets propagated
+    { num: 100 },
+    { deadline: Date.now() + 100 }, // Note: Setting GRPC deadline. Remark: Deadline gets propagated
     (err, res) => {
       if (!err) {
         console.log("Square Root Is: ", res.num);

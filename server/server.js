@@ -1,11 +1,27 @@
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
+const fs = require("node:fs");
 const packageDefinition = protoLoader.loadSync("../protos/greet.proto", {});
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const greetService = protoDescriptor.greet.GreetService;
 const computeService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/compute.proto", {})
 ).sum.ComputeService;
+
+/**
+ * SSL
+ */
+const secureCreds = grpc.ServerCredentials.createSsl(
+  fs.readFileSync("../certs/ca.crt"),
+  [
+    {
+      cert_chain: fs.readFileSync("../certs/server.crt"),
+      private_key: fs.readFileSync("../certs/server.pem")
+    }
+  ],
+  true
+);
+const insecureCreds = grpc.ServerCredentials.createInsecure();
 
 /**
  * Implemen Greet RPC method
@@ -204,10 +220,6 @@ server.addService(computeService.service, {
   sqrt
 });
 
-server.bindAsync(
-  "0.0.0.0:50051",
-  grpc.ServerCredentials.createInsecure(),
-  () => {
-    console.log("Server running at http://127.0.0.1:50051");
-  }
-);
+server.bindAsync("0.0.0.0:50051", secureCreds, () => {
+  console.log("Server running at http://127.0.0.1:50051");
+});
