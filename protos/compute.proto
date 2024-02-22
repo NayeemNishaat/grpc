@@ -11,6 +11,17 @@ service ComputeService {
 
   // client streaming api
   rpc Avg (stream AvgRequest) returns (AvgResponse);
+
+  // bi-directional streaming api
+  rpc CurrentMax (stream CurrentMaxRequest) returns (stream CurrentMaxResponse);
+}
+
+message CurrentMaxRequest {
+  int32 num = 1;
+}
+
+message CurrentMaxResponse {
+  int32 num = 1;
 }
 
 message AvgRequest {

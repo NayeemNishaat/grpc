@@ -142,14 +142,42 @@ function avg(call, callback) {
   });
 }
 
+/**
+ * CurrentMax BiDi Streaming RPC Method
+ */
+function currentMax(call, callback) {
+  let currentMax = -Number.MAX_SAFE_INTEGER;
+
+  call.on("data", (req) => {
+    if (req.num > currentMax) {
+      currentMax = req.num;
+      call.write({ num: currentMax });
+    }
+  });
+
+  call.on("error", (err) => {
+    console.error(err);
+  });
+
+  call.on("end", () => {
+    console.log("Client Ended!");
+    call.end();
+  });
+}
+
 const server = new grpc.Server();
-server.addService(greetService.service, {
-  Greet: greet,
-  greetManyTimes,
-  longGreet,
-  greetEveryone
+// server.addService(greetService.service, {
+//   Greet: greet,
+//   greetManyTimes,
+//   longGreet,
+//   greetEveryone
+// });
+server.addService(computeService.service, {
+  Sum: sum,
+  factor,
+  avg,
+  currentMax
 });
-// server.addService(computeService.service, { Sum: sum, factor, avg });
 
 server.bindAsync(
   "0.0.0.0:50051",

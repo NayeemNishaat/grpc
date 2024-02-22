@@ -7,15 +7,15 @@ const computeService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/compute.proto", {})
 ).sum.ComputeService;
 
-const greetClient = new greeterService(
-  "localhost:50051",
-  grpc.credentials.createInsecure()
-);
-
-// const sumClient = new computeService(
+// const greetClient = new greeterService(
 //   "localhost:50051",
 //   grpc.credentials.createInsecure()
 // );
+
+const computeClient = new computeService(
+  "localhost:50051",
+  grpc.credentials.createInsecure()
+);
 
 function greet() {
   greetClient.Greet(
@@ -87,7 +87,8 @@ async function sleep(interval) {
 
 async function greetEveryone() {
   const call = greetClient.greetEveryone({}, (err, res) => {
-    console.log("Client Initiated!");
+    console.log(err);
+    console.log(res);
   });
 
   call.on("data", (res) => {
@@ -115,7 +116,7 @@ async function greetEveryone() {
 }
 
 function sum() {
-  sumClient.Sum({ num1: 10, num2: 5 }, (error, response) => {
+  computeClient.Sum({ num1: 10, num2: 5 }, (error, response) => {
     if (!error) {
       console.log(response.total);
     } else {
@@ -125,7 +126,7 @@ function sum() {
 }
 
 function factor() {
-  const sumCall = sumClient.factor({ number: 567890 }, () => {});
+  const sumCall = computeClient.factor({ number: 567890 }, () => {});
 
   sumCall.on("data", (res) => {
     switch (Object.keys(res)[0]) {
@@ -162,7 +163,7 @@ function factor() {
 }
 
 function avg() {
-  const call = sumClient.avg({}, (err, res) => {
+  const call = computeClient.avg({}, (err, res) => {
     if (!err) {
       console.log("Average:", res.avg);
     } else {
@@ -183,8 +184,33 @@ function avg() {
     }, 1000);
 }
 
+async function currentMax() {
+  const call = computeClient.currentMax({}, (_err, _res) => {});
+
+  call.on("data", (res) => {
+    console.log("Current Max: ", res.num);
+  });
+
+  call.on("error", (err) => {
+    console.error(err);
+  });
+
+  call.on("end", () => {
+    console.log("Server Ended!");
+  });
+
+  const nums = [2, 4, 1, 5, 0, 7, 12, 4, 25];
+  for (const num of nums) {
+    call.write({ num });
+    await sleep(1000);
+  }
+
+  call.end();
+}
+
 // Execute RPCs
 // factor();
 // longGreet();
 // avg();
-greetEveryone();
+// greetEveryone();
+currentMax();
