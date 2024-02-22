@@ -17,7 +17,7 @@ function greet(call, callback) {
 /**
  * Implemen GreetManyTimes RPC Server Streaming Method
  */
-function greetManyTimes(call, callback) {
+function greetManyTimes(call) {
   const firstName = call.request.greeting.firstName;
 
   // setup streaming
@@ -64,7 +64,7 @@ async function sleep(interval) {
 /**
  * greetEveryone BiDi Streaming API
  */
-async function greetEveryone(call, callback) {
+async function greetEveryone(call) {
   call.on("data", (req) => {
     console.log(req.greeting.firstName + " " + req.greeting.lastName);
   });
@@ -96,16 +96,25 @@ function sum(call, callback) {
 
 /**
  * Factor Server Streaming RPC Method
+ * Important: callback is unavailable for server streaming
  */
-function factor(call, callback) {
+function factor(call) {
   let { number } = call.request,
     divisor = 2;
 
   if (number <= 1) {
-    call.write({
-      factorFailResponse: { error: true, message: "Invalid Input" }
+    // call.write({
+    //   factorFailResponse: { error: true, message: "Invalid Input" }
+    // });
+    // call.end();
+    // return
+
+    // Alt: Preferred way of error handling
+    call.emit("error", {
+      code: grpc.status.INVALID_ARGUMENT,
+      message: "Invalid Input"
+      // details: "Invalid Input"
     });
-    call.end();
     return;
   }
 
@@ -144,8 +153,9 @@ function avg(call, callback) {
 
 /**
  * CurrentMax BiDi Streaming RPC Method
+ * Important: callback is unavailable for bidi streaming
  */
-function currentMax(call, callback) {
+function currentMax(call) {
   let currentMax = -Number.MAX_SAFE_INTEGER;
 
   call.on("data", (req) => {

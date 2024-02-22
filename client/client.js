@@ -126,7 +126,7 @@ function sum() {
 }
 
 function factor() {
-  const sumCall = computeClient.factor({ number: 567890 }, () => {});
+  const sumCall = computeClient.factor({ number: 0 }, () => {});
 
   sumCall.on("data", (res) => {
     switch (Object.keys(res)[0]) {
@@ -219,9 +219,10 @@ function sqrt() {
 }
 
 // Execute RPCs
-// factor();
+factor();
+// sum();
 // longGreet();
 // avg();
 // greetEveryone();
 // currentMax();
-sqrt();
+// sqrt();
