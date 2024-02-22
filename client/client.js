@@ -209,20 +209,24 @@ async function currentMax() {
 }
 
 function sqrt() {
-  computeClient.sqrt({ num: -1 }, (err, res) => {
-    if (!err) {
-      console.log("Square Root Is: ", res.num);
-    } else {
-      console.error(err);
+  computeClient.sqrt(
+    { num: -1 },
+    { deadline: Date.now() + 10 }, // Note: Setting GRPC deadline. Remark: Deadline gets propagated
+    (err, res) => {
+      if (!err) {
+        console.log("Square Root Is: ", res.num);
+      } else {
+        console.error(err);
+      }
     }
-  });
+  );
 }
 
 // Execute RPCs
-factor();
+// factor();
 // sum();
 // longGreet();
 // avg();
 // greetEveryone();
 // currentMax();
-// sqrt();
+sqrt();
