@@ -199,7 +199,7 @@ async function currentMax() {
     console.log("Server Ended!");
   });
 
-  const nums = [2, 4, 1, 5, 0, 7, 12, 4, 25];
+  const nums = [1, 5, 3, 6, 2, 20];
   for (const num of nums) {
     call.write({ num });
     await sleep(1000);
