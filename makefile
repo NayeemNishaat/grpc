@@ -18,3 +18,6 @@ mg_fix:
 	/Users/labyrinth/.go/bin/migrate -path ./migration -database "postgres://localhost:5432/grpc?sslmode=disable" force $(v)
 # make migration_fix v=1
 # v?=v_default # Assign default value if not provided
+
+mg_goto:
+	/Users/labyrinth/.go/bin/migrate -path ./migration -database "postgres://localhost:5432/grpc?sslmode=disable" -verbose goto ${v}
