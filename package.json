@@ -17,9 +17,11 @@
   "license": "MIT",
   "dependencies": {
     "@grpc/grpc-js": "^1.10.1",
-    "@grpc/proto-loader": "^0.7.10"
+    "@grpc/proto-loader": "^0.7.10",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
+    "@types/pg": "^8.11.0",
     "google-protobuf": "^3.21.2",
     "grpc-tools": "^1.12.4"
   }
