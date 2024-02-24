@@ -218,7 +218,6 @@ function sqrt(call, callback) {
 async function listBlog(call) {
   const blogs = await query(`SELECT * FROM blogs`);
   blogs.rows.forEach((b) => {
-    console.log(b);
     call.write({ blog: b });
   });
   call.end();
