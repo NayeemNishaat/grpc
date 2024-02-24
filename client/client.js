@@ -239,11 +239,13 @@ function listBlog() {
   });
 
   listBlogCall.on("error", (err) => {
-    console.error(err);
+    if (err.code === grpc.status.NOT_FOUND) {
+      console.log("No blog found.");
+    } else console.error(err);
   });
 
   listBlogCall.on("end", () => {
-    console.log("Received all blogs!");
+    console.log("Done with blogs!");
   });
 }
 

@@ -226,6 +226,13 @@ async function listBlog(call) {
       blogs = await query(`SELECT * FROM blogs`);
     }
 
+    if (!blogs.rowCount) {
+      return call.emit("error", {
+        code: grpc.status.NOT_FOUND,
+        message: "No blog for this ID."
+      });
+    }
+
     blogs.rows.forEach((b) => {
       call.write({ blog: b });
     });
