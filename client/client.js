@@ -247,6 +247,19 @@ function listBlog() {
   });
 }
 
+function createBlog() {
+  blogClient.createBlog(
+    { blog: { author: "lby", title: "Test", content: "This is content!" } },
+    (err, res) => {
+      if (!err) {
+        console.log(res);
+      } else {
+        console.error(err);
+      }
+    }
+  );
+}
+
 // Execute RPCs
 // factor();
 // sum();
@@ -255,4 +268,5 @@ function listBlog() {
 // greetEveryone();
 // currentMax();
 // sqrt();
-listBlog();
+// listBlog();
+createBlog();

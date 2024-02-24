@@ -216,15 +216,44 @@ function sqrt(call, callback) {
  * Blog CRUD
  */
 async function listBlog(call) {
-  const blogs = await query(`SELECT * FROM blogs`);
-  blogs.rows.forEach((b) => {
-    call.write({ blog: b });
-  });
-  call.end();
+  try {
+    const blogs = await query(`SELECT * FROM blogs`);
+    blogs.rows.forEach((b) => {
+      call.write({ blog: b });
+    });
+    call.end();
+  } catch (err) {
+    console.error(err);
+    call.emit("error", {
+      code: grpc.status.INTERNAL,
+      message: "Something went wrong!"
+    });
+  }
+}
+
+async function createBlog(call, callback) {
+  try {
+    const { author, title, content } = call.request.blog;
+    const insertedBlog = await query(
+      `INSERT INTO blogs VALUES(DEFAULT, $1, $2, $3) RETURNING *`,
+      [author, title, content]
+    );
+
+    callback(null, { blog: insertedBlog.rows[0] });
+  } catch (err) {
+    console.error(err);
+    callback({ code: grpc.status.INTERNAL, message: "Something went wrong!" });
+
+    // Alt: Can also emit error
+    // call.emit("error", {
+    //   code: grpc.status.INTERNAL,
+    //   message: "Something went wrong!"
+    // });
+  }
 }
 
 const server = new grpc.Server();
-server.addService(blogService.service, { listBlog });
+server.addService(blogService.service, { listBlog, createBlog });
 // server.addService(greetService.service, {
 //   Greet: greet,
 //   greetManyTimes,
