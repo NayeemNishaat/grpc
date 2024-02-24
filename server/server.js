@@ -1,12 +1,16 @@
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const fs = require("node:fs");
+const { query } = require("../db");
 const packageDefinition = protoLoader.loadSync("../protos/greet.proto", {});
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const greetService = protoDescriptor.greet.GreetService;
 const computeService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/compute.proto", {})
 ).sum.ComputeService;
+const blogService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/blog.proto")
+).blog.BlogService;
 
 /**
  * SSL
@@ -191,6 +195,9 @@ function currentMax(call) {
   });
 }
 
+/**
+ * Error handling
+ */
 function sqrt(call, callback) {
   const { num } = call.request;
 
@@ -205,20 +212,33 @@ function sqrt(call, callback) {
   }
 }
 
+/**
+ * Blog CRUD
+ */
+async function listBlog(call) {
+  const blogs = await query(`SELECT * FROM blogs`);
+  blogs.rows.forEach((b) => {
+    console.log(b);
+    call.write({ blog: b });
+  });
+  call.end();
+}
+
 const server = new grpc.Server();
+server.addService(blogService.service, { listBlog });
 // server.addService(greetService.service, {
 //   Greet: greet,
 //   greetManyTimes,
 //   longGreet,
 //   greetEveryone
 // });
-server.addService(computeService.service, {
-  Sum: sum,
-  factor,
-  avg,
-  currentMax,
-  sqrt
-});
+// server.addService(computeService.service, {
+//   Sum: sum,
+//   factor,
+//   avg,
+//   currentMax,
+//   sqrt
+// });
 
 server.bindAsync("0.0.0.0:50051", secureCreds, () => {
   console.log("Server running at http://127.0.0.1:50051");

@@ -7,6 +7,9 @@ const greeterService = protoDescriptor.greet.GreetService;
 const computeService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/compute.proto", {})
 ).sum.ComputeService;
+const blogService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/blog.proto")
+).blog.BlogService;
 
 /**
  * SSL
@@ -19,7 +22,8 @@ const secureCreds = grpc.credentials.createSsl(
 const insecureCreds = grpc.ServerCredentials.createInsecure();
 
 // const greetClient = new greeterService("localhost:50051", insecureCreds);
-const computeClient = new computeService("localhost:50051", secureCreds);
+// const computeClient = new computeService("localhost:50051", secureCreds);
+const blogClient = new blogService("localhost:50051", secureCreds);
 
 function greet() {
   greetClient.Greet(
@@ -226,6 +230,23 @@ function sqrt() {
   );
 }
 
+function listBlog() {
+  const listBlogCall = blogClient.listBlog();
+
+  listBlogCall.on("data", (res) => {
+    console.log(Number(res.blog.id));
+    console.log(res.blog);
+  });
+
+  listBlogCall.on("error", (err) => {
+    console.error(err);
+  });
+
+  listBlogCall.on("end", () => {
+    console.log("Received all blogs!");
+  });
+}
+
 // Execute RPCs
 // factor();
 // sum();
@@ -233,4 +254,5 @@ function sqrt() {
 // avg();
 // greetEveryone();
 // currentMax();
-sqrt();
+// sqrt();
+listBlog();
