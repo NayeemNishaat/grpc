@@ -15,7 +15,9 @@ message CreateBlogResponse {
   Blog blog = 1;
 }
 
-message ListBlogRequest {}
+message ListBlogRequest {
+  int64 id = 1;
+}
 
 message Blog {
   int64 id = 1;

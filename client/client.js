@@ -231,10 +231,10 @@ function sqrt() {
 }
 
 function listBlog() {
-  const listBlogCall = blogClient.listBlog();
+  const listBlogCall = blogClient.listBlog({ id: 10 });
 
   listBlogCall.on("data", (res) => {
-    console.log(Number(res.blog.id));
+    res.blog.id = Number(res.blog.id);
     console.log(res.blog);
   });
 
@@ -268,5 +268,5 @@ function createBlog() {
 // greetEveryone();
 // currentMax();
 // sqrt();
-// listBlog();
-createBlog();
+listBlog();
+// createBlog();
