@@ -262,6 +262,16 @@ function createBlog() {
   );
 }
 
+function updateBlog() {
+  blogClient.updateBlog({}, (err, res) => {
+    if (!err) {
+      console.log(res);
+    } else {
+      console.error(err);
+    }
+  });
+}
+
 // Execute RPCs
 // factor();
 // sum();
@@ -270,5 +280,6 @@ function createBlog() {
 // greetEveryone();
 // currentMax();
 // sqrt();
-listBlog();
+// listBlog();
 // createBlog();
+updateBlog();

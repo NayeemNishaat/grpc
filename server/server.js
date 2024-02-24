@@ -1,7 +1,8 @@
 const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const fs = require("node:fs");
-const { query } = require("../db");
+const { query } = require("./db");
+const { catchAsync } = require("./lib/error");
 const packageDefinition = protoLoader.loadSync("../protos/greet.proto", {});
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const greetService = protoDescriptor.greet.GreetService;
@@ -267,8 +268,14 @@ async function createBlog(call, callback) {
   }
 }
 
+const updateBlog = catchAsync(async function (call, callback) {
+  const { id, author, title, content } = call.request;
+
+  console.log(id, author, title, content);
+});
+
 const server = new grpc.Server();
-server.addService(blogService.service, { listBlog, createBlog });
+server.addService(blogService.service, { listBlog, createBlog, updateBlog });
 // server.addService(greetService.service, {
 //   Greet: greet,
 //   greetManyTimes,
