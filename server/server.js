@@ -13,6 +13,10 @@ const blogService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/blog.proto")
 ).blog.BlogService;
 
+const testService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/test.proto")
+).test.TestService;
+
 /**
  * SSL
  */
@@ -312,19 +316,29 @@ const deleteBlog = catchAsync(async (call, callback) => {
   }
 });
 
-const server = new grpc.Server();
-server.addService(blogService.service, {
-  listBlog,
-  createBlog,
-  updateBlog,
-  deleteBlog
+const test = catchAsync(async (call, callback) => {
+  console.log(call.request);
+  callback(null, {
+    projects: { one: { name: "Spin", class: "READ" } },
+    nums: [{ name: "LLM", class: "ERR" }]
+  });
 });
+
+const server = new grpc.Server();
+// server.addService(blogService.service, {
+//   listBlog,
+//   createBlog,
+//   updateBlog,
+//   deleteBlog
+// });
+
 // server.addService(greetService.service, {
 //   Greet: greet,
 //   greetManyTimes,
 //   longGreet,
 //   greetEveryone
 // });
+
 // server.addService(computeService.service, {
 //   Sum: sum,
 //   factor,
@@ -332,6 +346,8 @@ server.addService(blogService.service, {
 //   currentMax,
 //   sqrt
 // });
+
+server.addService(testService.service, { test });
 
 server.bindAsync("0.0.0.0:50051", secureCreds, () => {
   console.log("Server running at http://127.0.0.1:50051");

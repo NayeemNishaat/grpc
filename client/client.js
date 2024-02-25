@@ -10,6 +10,9 @@ const computeService = grpc.loadPackageDefinition(
 const blogService = grpc.loadPackageDefinition(
   protoLoader.loadSync("../protos/blog.proto")
 ).blog.BlogService;
+const testService = grpc.loadPackageDefinition(
+  protoLoader.loadSync("../protos/test.proto")
+).test.TestService;
 
 /**
  * SSL
@@ -23,7 +26,8 @@ const insecureCreds = grpc.ServerCredentials.createInsecure();
 
 // const greetClient = new greeterService("localhost:50051", insecureCreds);
 // const computeClient = new computeService("localhost:50051", secureCreds);
-const blogClient = new blogService("localhost:50051", secureCreds);
+// const blogClient = new blogService("localhost:50051", secureCreds);
+const testClient = new testService("localhost:50051", secureCreds);
 
 function greet() {
   greetClient.Greet(
@@ -290,6 +294,19 @@ function deleteBlog() {
   });
 }
 
+function test() {
+  testClient.test(
+    { type: "ERROR", nums: [23, 7, 33], typeObj: { genre: "READ" } },
+    (err, res) => {
+      if (!err) {
+        console.log(res);
+      } else {
+        console.error(err);
+      }
+    }
+  );
+}
+
 // Execute RPCs
 // factor();
 // sum();
@@ -301,4 +318,5 @@ function deleteBlog() {
 // listBlog();
 // createBlog();
 // updateBlog();
-deleteBlog();
+// deleteBlog();
+test();

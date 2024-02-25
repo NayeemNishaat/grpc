@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package test;
+
+service TestService {
+  // server streaming api
+  rpc FactorDecomp (FcatorRequest) returns (stream FactorResponses);
+
+  // test rpc with deadline and enum
+  rpc Test (TestRequest) returns (TestResponse) {
+    option deadline = 200;
+  }
+}
+
+message FcatorRequest {
+  int32 number = 1;
+}
+
+message FactorSuccessResponse {
+  int32 number = 1;
+}
+
+message FactorFailResponse {
+  bool error = 1;
+  string message = 2;
+}
+
+
+message FactorResponses {
+  oneof FactorResponse {
+    FactorSuccessResponse factorSuccessResponse = 1;
+    FactorFailResponse factorFailResponse = 2;
+  }
+  // Other variables
+}
+
+message TestRequest {
+  Type type = 1;
+  repeated int32 nums = 2;
+  map <string, Type> typeObj = 3;
+}
+
+message TestResponse {
+  map<string, Project> projects = 1; // Cannot use repeated for that use message. Object => {k: v}
+  repeated Project nums = 2; // Array => [i, j, k]
+}
+
+enum Type {
+  option allow_alias = true;
+  READ = 0; // Important: enum starts with 0 and it's the default
+  WRITE = 1;
+  ERROR = 2;
+  ERR = 2;
+  reserved 8, 9, 15 to 20;
+  reserved "test", "opt";
+}
+
+message Project {
+  optional string name = 1;
+  Type class = 2;
+}
