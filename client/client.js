@@ -279,9 +279,11 @@ function updateBlog() {
 }
 
 function deleteBlog() {
-  blogClient.deleteBlog({ id: 7 }, (err, res) => {
+  blogClient.deleteBlog({ id: 8 }, (err, res) => {
     if (!err) {
       console.log(res.message);
+    } else if (err.code === grpc.status.NOT_FOUND) {
+      console.log(err.details);
     } else {
       console.error(err);
     }
