@@ -270,12 +270,22 @@ function updateBlog() {
     },
     (err, res) => {
       if (!err) {
-        console.log(res);
+        console.log(res.message);
       } else {
         console.error(err);
       }
     }
   );
+}
+
+function deleteBlog() {
+  blogClient.deleteBlog({ id: 7 }, (err, res) => {
+    if (!err) {
+      console.log(res.message);
+    } else {
+      console.error(err);
+    }
+  });
 }
 
 // Execute RPCs
@@ -288,4 +298,5 @@ function updateBlog() {
 // sqrt();
 // listBlog();
 // createBlog();
-updateBlog();
+// updateBlog();
+deleteBlog();

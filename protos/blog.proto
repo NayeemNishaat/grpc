@@ -6,6 +6,15 @@ service BlogService {
   rpc ListBlog (ListBlogRequest) returns (stream ListBlogResponse);
   rpc CreateBlog (CreateBlogRequest) returns (CreateBlogResponse);
   rpc UpdateBlog (UpdateBlogRequest) returns (UpdateBlogResponse);
+  rpc DeleteBlog (DeleteBlogRequest) returns (DeleteBlogResponse);
+}
+
+message DeleteBlogRequest {
+  int64 id = 1;
+}
+
+message DeleteBlogResponse {
+  string message = 1;
 }
 
 message Set {

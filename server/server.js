@@ -300,8 +300,25 @@ const updateBlog = catchAsync(async function (call, callback) {
   }
 });
 
+const deleteBlog = catchAsync(async (call, callback) => {
+  const { id } = call.request;
+
+  const delRes = await query(`DELETE FROM blogs WHERE id = $1;`, [Number(id)]);
+
+  if (delRes.rowCount) {
+    callback(null, { message: "Deleted!" });
+  } else {
+    callback({ code: grpc.status.NOT_FOUND, message: "No match found!" });
+  }
+});
+
 const server = new grpc.Server();
-server.addService(blogService.service, { listBlog, createBlog, updateBlog });
+server.addService(blogService.service, {
+  listBlog,
+  createBlog,
+  updateBlog,
+  deleteBlog
+});
 // server.addService(greetService.service, {
 //   Greet: greet,
 //   greetManyTimes,
