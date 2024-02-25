@@ -1,7 +1,7 @@
 const grpc = require("@grpc/grpc-js");
 
-exports.catchAsync = (fn) => (call) =>
-  Promise.resolve(fn(call)).catch((err) => {
+exports.catchAsync = (fn) => (call, callback) =>
+  Promise.resolve(fn(call, callback)).catch((err) => {
     console.error(err);
 
     call.emit("error", {

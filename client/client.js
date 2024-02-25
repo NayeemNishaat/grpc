@@ -263,13 +263,19 @@ function createBlog() {
 }
 
 function updateBlog() {
-  blogClient.updateBlog({}, (err, res) => {
-    if (!err) {
-      console.log(res);
-    } else {
-      console.error(err);
+  blogClient.updateBlog(
+    {
+      set: { author: "Nayeem", title: "Magnificent", content: "Shab e-Barat." },
+      where: { id: 10, author: "lby" }
+    },
+    (err, res) => {
+      if (!err) {
+        console.log(res);
+      } else {
+        console.error(err);
+      }
     }
-  });
+  );
 }
 
 // Execute RPCs

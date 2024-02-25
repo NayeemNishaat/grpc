@@ -269,9 +269,35 @@ async function createBlog(call, callback) {
 }
 
 const updateBlog = catchAsync(async function (call, callback) {
-  const { id, author, title, content } = call.request;
+  const { set, where } = call.request;
 
-  console.log(id, author, title, content);
+  let setQuery = "",
+    whereQuery = "",
+    i = 0;
+  const params = [];
+
+  Object.entries(set).forEach(([k, v], j) => {
+    if (j !== 0) setQuery += ", ";
+    setQuery += `${k} = $${++i}`;
+    params.push(k === "id" ? Number(v) : v);
+  });
+
+  Object.entries(where).forEach(([k, v], j) => {
+    if (j !== 0) whereQuery += " AND ";
+    whereQuery += `${k} = $${++i}`;
+    params.push(k === "id" ? Number(v) : v);
+  });
+
+  const updateRes = await query(
+    `UPDATE blogs SET ${setQuery} WHERE ${whereQuery};`,
+    params
+  );
+
+  if (updateRes.rowCount) {
+    callback(null, { message: "Updated" });
+  } else {
+    callback({ code: grpc.status.NOT_FOUND, message: "No match found!" });
+  }
 });
 
 const server = new grpc.Server();

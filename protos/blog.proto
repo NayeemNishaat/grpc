@@ -8,11 +8,22 @@ service BlogService {
   rpc UpdateBlog (UpdateBlogRequest) returns (UpdateBlogResponse);
 }
 
-message UpdateBlogRequest {
+message Set {
+  optional string author = 1;
+  optional string title = 2;
+  optional string content = 3;
+}
+
+message Where {
   int64 id = 1;
   string author = 2;
   string title = 3;
   string content = 4;
+}
+
+message UpdateBlogRequest {
+  Set set = 1;
+  Where where = 2;
 }
 
 message UpdateBlogResponse {
